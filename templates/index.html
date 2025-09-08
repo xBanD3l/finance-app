@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">
+      <span class="gradient-text">AI-Powered</span> Investment Recommendations
+    </h1>
+    <p class="hero-subtitle">
+      Get personalized stock and ETF recommendations tailored to your goals, risk tolerance, and timeline. 
+      Perfect for beginners and students starting their investment journey.
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('goals') }}" class="btn btn-primary btn-large">Get Recommendations</a>
+      <button class="btn btn-secondary btn-large" onclick="showDemo()">Try Demo</button>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="floating-card">
+      <div class="card-icon">📈</div>
+      <div class="card-text">Smart Recommendations</div>
+    </div>
+    <div class="floating-card delay-1">
+      <div class="card-icon">🎯</div>
+      <div class="card-text">Goal-Focused</div>
+    </div>
+    <div class="floating-card delay-2">
+      <div class="card-icon">🛡️</div>
+      <div class="card-text">Risk-Adjusted</div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works">
+  <div class="section-header">
+    <h2>How It Works</h2>
+    <p>Get personalized recommendations in just 4 simple steps</p>
+  </div>
+  
+  <div class="steps-container">
+    <div class="step-card" data-step="1">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <h3>Choose Your Goal</h3>
+        <p>Select from preset investment goals like building wealth, saving for college, or retirement. You can also enter a custom goal.</p>
+        <div class="step-examples">
+          <span class="example-tag">Build Wealth</span>
+          <span class="example-tag">College Fund</span>
+          <span class="example-tag">Retirement</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step-card" data-step="2">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <h3>Set Risk Tolerance</h3>
+        <p>Use our interactive slider to indicate how much risk you're comfortable with. We'll adjust recommendations accordingly.</p>
+        <div class="risk-preview">
+          <div class="risk-bar">
+            <div class="risk-fill" style="width: 60%"></div>
+          </div>
+          <span class="risk-label">Medium Risk</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step-card" data-step="3">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <h3>Enter Investment Details</h3>
+        <p>Specify your investment amount and time horizon. Our AI considers these factors for personalized recommendations.</p>
+        <div class="investment-preview">
+          <div class="preview-item">
+            <span class="preview-label">Amount:</span>
+            <span class="preview-value">$5,000</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Timeline:</span>
+            <span class="preview-value">5 years</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step-card" data-step="4">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <h3>Get AI Recommendations</h3>
+        <p>Receive 3 personalized stock/ETF recommendations with detailed explanations, risk levels, and portfolio allocation.</p>
+        <div class="recommendation-preview">
+          <div class="rec-item">
+            <span class="rec-ticker">VTI</span>
+            <span class="rec-name">Vanguard Total Stock Market</span>
+            <span class="rec-allocation">40%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+  <div class="section-header">
+    <h2>Key Features</h2>
+    <p>Everything you need to make informed investment decisions</p>
+  </div>
+  
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3>Goal-Based Investing</h3>
+      <p>Choose from preset goals or create custom ones. Our AI tailors recommendations to your specific objectives.</p>
+      <div class="feature-highlight">Perfect for beginners</div>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">⚖️</div>
+      <h3>Risk Assessment</h3>
+      <p>Interactive risk tolerance slider helps you find the perfect balance between growth and security.</p>
+      <div class="feature-highlight">Personalized risk profile</div>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>AI-Powered Analysis</h3>
+      <p>Advanced AI considers market trends, fundamentals, and your profile to generate smart recommendations.</p>
+      <div class="feature-highlight">Cutting-edge technology</div>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Detailed Explanations</h3>
+      <p>Get beginner-friendly explanations for each recommendation, including pros, cons, and expected outcomes.</p>
+      <div class="feature-highlight">Learn as you invest</div>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">🔗</div>
+      <h3>Quick Research Links</h3>
+      <p>Access instant links to research each recommended stock or ETF on popular financial platforms.</p>
+      <div class="feature-highlight">Easy due diligence</div>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>Mobile-Friendly</h3>
+      <p>Fully responsive design works perfectly on all devices, from phones to tablets to desktops.</p>
+      <div class="feature-highlight">Invest anywhere</div>
+    </div>
+  </div>
+</section>
+
+<!-- Demo Section -->
+<section class="demo-section" id="demoSection" style="display: none;">
+  <div class="section-header">
+    <h2>Try It Out</h2>
+    <p>See what kind of recommendations you'll get</p>
+  </div>
+  
+  <div class="demo-container">
+    <div class="demo-form">
+      <div class="demo-input">
+        <label>Investment Goal:</label>
+        <select id="demoGoal">
+          <option value="build_wealth">Build Wealth</option>
+          <option value="save_for_college">Save for College</option>
+          <option value="retirement">Retirement Planning</option>
+          <option value="short_term">Short-term Savings</option>
+        </select>
+      </div>
+      <div class="demo-input">
+        <label>Risk Level:</label>
+        <select id="demoRisk">
+          <option value="low">Low Risk</option>
+          <option value="medium" selected>Medium Risk</option>
+          <option value="high">High Risk</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="generateDemoRecommendations()">Generate Demo</button>
+    </div>
+    
+    <div class="demo-results" id="demoResults" style="display: none;">
+      <h3>Sample Recommendations:</h3>
+      <div class="demo-recommendations">
+        <!-- Demo recommendations will be populated here -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Future Features Section -->
+<section class="future-features">
+  <div class="section-header">
+    <h2>Coming Soon</h2>
+    <p>Exciting features we're working on</p>
+  </div>
+  
+  <div class="future-grid">
+    <div class="future-card">
+      <div class="future-icon">📈</div>
+      <h3>Portfolio Tracking</h3>
+      <p>Track your investments and visualize portfolio performance with interactive charts and analytics.</p>
+      <div class="coming-soon">Coming Soon</div>
+    </div>
+    
+    <div class="future-card">
+      <div class="future-icon">🔔</div>
+      <h3>Smart Notifications</h3>
+      <p>Get alerts for market changes and news relevant to your investments, keeping you informed.</p>
+      <div class="coming-soon">Coming Soon</div>
+    </div>
+    
+    <div class="future-card">
+      <div class="future-icon">🧠</div>
+      <h3>AI Performance Insights</h3>
+      <p>Understand why your portfolio is performing the way it is with AI-powered explanations.</p>
+      <div class="coming-soon">Coming Soon</div>
+    </div>
+    
+    <div class="future-card">
+      <div class="future-icon">📄</div>
+      <h3>Export Reports</h3>
+      <p>Download your recommendations and portfolio analysis as PDF or CSV files for your records.</p>
+      <div class="coming-soon">Coming Soon</div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section">
+  <div class="cta-content">
+    <h2>Ready to Start Investing?</h2>
+    <p>Join thousands of students and beginners who are building their financial future with AI-powered recommendations.</p>
+    <div class="cta-actions">
+      <a href="{{ url_for('goals') }}" class="btn btn-primary btn-large">Get Started Now</a>
+      <a href="#learn-more" class="btn btn-secondary btn-large">Learn More</a>
+    </div>
+  </div>
+</section>
+
+<!-- Learn More Section -->
+<section class="learn-more" id="learn-more">
+  <div class="section-header">
+    <h2>Why Choose Bandel Finance?</h2>
+    <p>Built specifically for students and investment beginners</p>
+  </div>
+  
+  <div class="benefits-grid">
+    <div class="benefit-item">
+      <div class="benefit-icon">🎓</div>
+      <h3>Student-Friendly</h3>
+      <p>Designed with high school and college students in mind, using simple language and clear explanations.</p>
+    </div>
+    
+    <div class="benefit-item">
+      <div class="benefit-icon">🆓</div>
+      <h3>Completely Free</h3>
+      <p>No hidden fees, no subscriptions, no commissions. Get professional-quality recommendations at no cost.</p>
+    </div>
+    
+    <div class="benefit-item">
+      <div class="benefit-icon">🔒</div>
+      <h3>Privacy-Focused</h3>
+      <p>Your data stays private. We don't store personal information or require account creation.</p>
+    </div>
+    
+    <div class="benefit-item">
+      <div class="benefit-icon">📚</div>
+      <h3>Educational</h3>
+      <p>Learn about investing while getting recommendations. Each suggestion includes educational explanations.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+// Demo functionality
+function showDemo() {
+  document.getElementById('demoSection').style.display = 'block';
+  document.getElementById('demoSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function generateDemoRecommendations() {
+  const goal = document.getElementById('demoGoal').value;
+  const risk = document.getElementById('demoRisk').value;
+  
+  // Sample demo recommendations based on selections
+  const demoData = {
+    build_wealth: {
+      low: [
+        { ticker: 'VTI', name: 'Vanguard Total Stock Market ETF', allocation: '50%', why: 'Broad market exposure with lower risk for wealth building' },
+        { ticker: 'BND', name: 'Vanguard Total Bond Market ETF', allocation: '30%', why: 'Stable bond allocation for conservative growth' },
+        { ticker: 'VTEB', name: 'Vanguard Tax-Exempt Bond ETF', allocation: '20%', why: 'Tax-free municipal bonds for additional stability' }
+      ],
+      medium: [
+        { ticker: 'VTI', name: 'Vanguard Total Stock Market ETF', allocation: '40%', why: 'Broad market exposure for long-term wealth building' },
+        { ticker: 'AAPL', name: 'Apple Inc.', allocation: '30%', why: 'Blue-chip stock with strong fundamentals and growth potential' },
+        { ticker: 'VXUS', name: 'Vanguard Total International Stock ETF', allocation: '30%', why: 'International diversification for global growth' }
+      ],
+      high: [
+        { ticker: 'QQQ', name: 'Invesco QQQ Trust', allocation: '40%', why: 'Technology-heavy ETF for aggressive growth' },
+        { ticker: 'ARKK', name: 'ARK Innovation ETF', allocation: '30%', why: 'Innovation-focused ETF for high growth potential' },
+        { ticker: 'VTI', name: 'Vanguard Total Stock Market ETF', allocation: '30%', why: 'Broad market exposure for aggressive investors' }
+      ]
+    }
+  };
+  
+  const recommendations = demoData[goal]?.[risk] || demoData.build_wealth.medium;
+  
+  const resultsDiv = document.getElementById('demoResults');
+  const recommendationsDiv = resultsDiv.querySelector('.demo-recommendations');
+  
+  recommendationsDiv.innerHTML = recommendations.map(rec => `
+    <div class="demo-rec-card">
+      <div class="rec-header">
+        <span class="rec-ticker">${rec.ticker}</span>
+        <span class="rec-allocation">${rec.allocation}</span>
+      </div>
+      <div class="rec-name">${rec.name}</div>
+      <div class="rec-why">${rec.why}</div>
+    </div>
+  `).join('');
+  
+  resultsDiv.style.display = 'block';
+}
+
+// Step animation on scroll
+function animateSteps() {
+  const steps = document.querySelectorAll('.step-card');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate-in');
+      }
+    });
+  }, { threshold: 0.3 });
+  
+  steps.forEach(step => observer.observe(step));
+}
+
+// Initialize animations when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  animateSteps();
+  
+  // Add hover effects to feature cards
+  const featureCards = document.querySelectorAll('.feature-card');
+  featureCards.forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-5px)';
+    });
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+});
+</script>
+{% endblock %}
