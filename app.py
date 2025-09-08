@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for
-from openai import OpenAI
+# from openai import OpenAI
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -9,10 +9,10 @@ load_dotenv()
 app = Flask(__name__)
 
 # Initialize OpenAI client
-from openai import OpenAI
+import os
+import openai
 
-client = OpenAI()
-
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def generate_recommendations(goal: str, risk: str, custom_goal: str | None = None, 
                              investment_amount: str | None = None, time_horizon: str | None = None):
@@ -70,7 +70,7 @@ INSTRUCTIONS:
         """
 
         # Call the OpenAI API
-        response = client.chat.completions.create(
+        response = client.chat.completions.create(  # pyright: ignore[reportUndefinedVariable]
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a professional financial advisor providing clear, actionable investment advice. Always respond with valid JSON."},
@@ -233,4 +233,6 @@ def results():
                          time_horizon=time_horizon)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
