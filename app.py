@@ -9,7 +9,10 @@ load_dotenv()
 app = Flask(__name__)
 
 # Initialize OpenAI client
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+from openai import OpenAI
+
+client = OpenAI()
+
 
 def generate_recommendations(goal: str, risk: str, custom_goal: str | None = None, 
                              investment_amount: str | None = None, time_horizon: str | None = None):
