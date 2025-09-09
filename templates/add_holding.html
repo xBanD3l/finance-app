@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+  <h1>Add Stock Holding</h1>
+  <p>Enter details for a new stock in your portfolio</p>
+</div>
+
+<div class="card">
+  <form method="post" class="holding-form">
+    <div class="form-group">
+      <label for="ticker">
+        <strong>Stock Symbol</strong>
+        <input type="text" name="ticker" id="ticker" required 
+               placeholder="e.g., AAPL, MSFT, GOOGL" 
+               pattern="[A-Za-z]{1,5}"
+               oninput="this.value = this.value.toUpperCase()">
+        <small class="input-hint">Enter the stock ticker symbol (1-5 letters)</small>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="shares">
+        <strong>Number of Shares</strong>
+        <input type="number" name="shares" id="shares" required 
+               min="0.01" step="0.01" 
+               placeholder="e.g., 10, 25.5, 100">
+        <small class="input-hint">Enter the number of shares you own</small>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="purchase_price">
+        <strong>Purchase Price per Share</strong>
+        <input type="number" name="purchase_price" id="purchase_price" required 
+               min="0.01" step="0.01" 
+               placeholder="e.g., 150.25, 200.00">
+        <small class="input-hint">Enter the price you paid per share</small>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="purchase_date">
+        <strong>Purchase Date (Optional)</strong>
+        <input type="date" name="purchase_date" id="purchase_date">
+        <small class="input-hint">When did you purchase these shares?</small>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Add to Portfolio</button>
+      <a href="{{ url_for('portfolio') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<div class="card info-card">
+  <h3>💡 Tips for Adding Holdings</h3>
+  <ul>
+    <li><strong>Stock Symbol:</strong> Use the official ticker symbol (e.g., AAPL for Apple, MSFT for Microsoft)</li>
+    <li><strong>Shares:</strong> Enter the exact number of shares you own, including fractional shares if applicable</li>
+    <li><strong>Purchase Price:</strong> Use the average price if you bought shares at different times</li>
+    <li><strong>Real-time Prices:</strong> Current market prices will be fetched automatically</li>
+  </ul>
+</div>
+
+<script>
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('.holding-form');
+  const tickerInput = document.getElementById('ticker');
+  const sharesInput = document.getElementById('shares');
+  const priceInput = document.getElementById('purchase_price');
+  
+  // Real-time validation
+  tickerInput.addEventListener('input', function() {
+    this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '');
+    if (this.value.length > 5) {
+      this.value = this.value.substring(0, 5);
+    }
+  });
+  
+  sharesInput.addEventListener('input', function() {
+    if (this.value < 0) this.value = 0;
+  });
+  
+  priceInput.addEventListener('input', function() {
+    if (this.value < 0) this.value = 0;
+  });
+  
+  // Form submission validation
+  form.addEventListener('submit', function(e) {
+    const ticker = tickerInput.value.trim();
+    const shares = parseFloat(sharesInput.value);
+    const price = parseFloat(priceInput.value);
+    
+    if (!ticker || ticker.length < 1) {
+      alert('Please enter a valid stock symbol');
+      e.preventDefault();
+      return false;
+    }
+    
+    if (!shares || shares <= 0) {
+      alert('Please enter a valid number of shares');
+      e.preventDefault();
+      return false;
+    }
+    
+    if (!price || price <= 0) {
+      alert('Please enter a valid purchase price');
+      e.preventDefault();
+      return false;
+    }
+  });
+  
+  // Set default purchase date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('purchase_date').value = today;
+});
+</script>
+
+<style>
+.holding-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.input-hint {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.info-card {
+  margin-top: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.info-card ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.info-card li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.info-card strong {
+  color: var(--accent);
+}
+</style>
+{% endblock %}

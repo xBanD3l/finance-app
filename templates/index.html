@@ -204,28 +204,36 @@
       <div class="future-icon">📈</div>
       <h3>Portfolio Tracking</h3>
       <p>Track your investments and visualize portfolio performance with interactive charts and analytics.</p>
-      <div class="coming-soon">Coming Soon</div>
+      <div class="coming-soon">
+        <a href="{{ url_for('portfolio') }}" class="btn btn-primary btn-small">Try Beta</a>
+      </div>
     </div>
     
     <div class="future-card">
       <div class="future-icon">🔔</div>
       <h3>Smart Notifications</h3>
       <p>Get alerts for market changes and news relevant to your investments, keeping you informed.</p>
-      <div class="coming-soon">Coming Soon</div>
+      <div class="coming-soon">
+        <a href="{{ url_for('notifications') }}" class="btn btn-primary btn-small">Try Beta</a>
+      </div>
     </div>
     
     <div class="future-card">
       <div class="future-icon">🧠</div>
       <h3>AI Performance Insights</h3>
       <p>Understand why your portfolio is performing the way it is with AI-powered explanations.</p>
-      <div class="coming-soon">Coming Soon</div>
+      <div class="coming-soon">
+        <a href="{{ url_for('insights') }}" class="btn btn-primary btn-small">Try Beta</a>
+      </div>
     </div>
     
     <div class="future-card">
       <div class="future-icon">📄</div>
       <h3>Export Reports</h3>
       <p>Download your recommendations and portfolio analysis as PDF or CSV files for your records.</p>
-      <div class="coming-soon">Coming Soon</div>
+      <div class="coming-soon">
+        <a href="{{ url_for('export_preview') }}" class="btn btn-primary btn-small">Try Beta</a>
+      </div>
     </div>
   </div>
 </section>
@@ -357,4 +365,23 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+
+<style>
+.coming-soon .btn {
+  background: white;
+  color: var(--accent);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.coming-soon .btn:hover {
+  background: var(--bg-secondary);
+  color: var(--accent);
+}
+</style>
 {% endblock %}

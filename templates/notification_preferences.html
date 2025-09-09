@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Notification Preferences - Stockly{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-cog"></i> Notification Preferences</h2>
+                <a href="{{ url_for('notifications') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Notifications
+                </a>
+            </div>
+
+            <form method="POST" action="{{ url_for('notification_preferences') }}">
+                <!-- Price Change Alerts -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-line"></i> Price Change Alerts</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="price_change_threshold" class="form-label">
+                                Price Change Threshold (%)
+                            </label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="price_change_threshold" 
+                                   name="price_change_threshold" 
+                                   value="{{ preferences.price_change_threshold }}"
+                                   min="1" 
+                                   max="50" 
+                                   step="0.1">
+                            <div class="form-text">
+                                Get notified when stocks in your watchlist change by this percentage or more.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News & Events -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-newspaper"></i> News & Events</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="big_news_enabled" 
+                                   name="big_news_enabled"
+                                   {% if preferences.big_news_enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="big_news_enabled">
+                                <strong>Big News Alerts</strong>
+                            </label>
+                            <div class="form-text">
+                                Receive notifications for major news events affecting your stocks.
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="earnings_alerts" 
+                                   name="earnings_alerts"
+                                   {% if preferences.earnings_alerts %}checked{% endif %}>
+                            <label class="form-check-label" for="earnings_alerts">
+                                <strong>Earnings Reports</strong>
+                            </label>
+                            <div class="form-text">
+                                Get notified when companies release earnings reports.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Watchlist Selection -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-star"></i> Watchlist Stocks</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if portfolio_stocks %}
+                            <p class="text-muted mb-3">Select which stocks from your portfolio to monitor for notifications:</p>
+                            <div class="row">
+                                {% for stock in portfolio_stocks %}
+                                <div class="col-md-4 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               id="stock_{{ stock }}" 
+                                               name="watchlist_stocks" 
+                                               value="{{ stock }}"
+                                               {% if stock in preferences.watchlist_stocks %}checked{% endif %}>
+                                        <label class="form-check-label" for="stock_{{ stock }}">
+                                            {{ stock }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                No stocks in your portfolio yet. 
+                                <a href="{{ url_for('add_holding') }}">Add some stocks</a> to start receiving notifications!
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Notification Methods -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-bell"></i> Notification Methods</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="push_notifications" 
+                                   name="push_notifications"
+                                   {% if preferences.push_notifications %}checked{% endif %}>
+                            <label class="form-check-label" for="push_notifications">
+                                <strong>Push Notifications</strong>
+                            </label>
+                            <div class="form-text">
+                                Receive notifications in your browser (requires permission).
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="email_notifications" 
+                                   name="email_notifications"
+                                   {% if preferences.email_notifications %}checked{% endif %}>
+                            <label class="form-check-label" for="email_notifications">
+                                <strong>Email Notifications</strong>
+                            </label>
+                            <div class="form-text">
+                                Receive notifications via email (coming soon).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coming Soon Features -->
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class="fas fa-rocket"></i> Coming Soon</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> Real-time price monitoring</li>
+                            <li><i class="fas fa-check text-success"></i> Custom alert conditions</li>
+                            <li><i class="fas fa-check text-success"></i> SMS notifications</li>
+                            <li><i class="fas fa-check text-success"></i> Advanced filtering options</li>
+                            <li><i class="fas fa-check text-success"></i> Integration with news APIs</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> Save Preferences
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Current Settings Summary -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle"></i> Current Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Price Threshold:</strong><br>
+                        <span class="badge bg-primary">{{ preferences.price_change_threshold }}%</span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Watchlist Stocks:</strong><br>
+                        {% if preferences.watchlist_stocks %}
+                            {% for stock in preferences.watchlist_stocks %}
+                                <span class="badge bg-secondary me-1">{{ stock }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted">None selected</span>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Enabled Features:</strong><br>
+                        {% if preferences.big_news_enabled %}
+                            <span class="badge bg-success me-1">Big News</span>
+                        {% endif %}
+                        {% if preferences.earnings_alerts %}
+                            <span class="badge bg-success me-1">Earnings</span>
+                        {% endif %}
+                        {% if preferences.push_notifications %}
+                            <span class="badge bg-success me-1">Push</span>
+                        {% endif %}
+                        {% if preferences.email_notifications %}
+                            <span class="badge bg-success me-1">Email</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-question-circle"></i> Help</h5>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted">
+                        <strong>Price Change Threshold:</strong> Set the minimum percentage change required to trigger an alert.
+                    </p>
+                    <p class="small text-muted">
+                        <strong>Watchlist:</strong> Only stocks in your watchlist will be monitored for alerts.
+                    </p>
+                    <p class="small text-muted">
+                        <strong>Push Notifications:</strong> Browser notifications that appear even when the app is closed.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

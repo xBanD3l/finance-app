@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block title %}Export Reports - Stockly{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-download"></i> Export Reports</h2>
+                <a href="{{ url_for('portfolio') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Portfolio
+                </a>
+            </div>
+
+            <!-- Coming Soon Banner -->
+            <div class="alert alert-info mb-4">
+                <h5><i class="fas fa-info-circle"></i> Coming Soon!</h5>
+                <p class="mb-0">Export Reports are currently in development. This is a preview of the export system with sample functionality. Full export capabilities will be available soon!</p>
+            </div>
+
+            {% if not has_portfolio %}
+            <!-- No Portfolio State -->
+            <div class="empty-state">
+                <i class="fas fa-chart-line"></i>
+                <h4>No Portfolio Data</h4>
+                <p>You need to add some stocks to your portfolio before you can export reports.</p>
+                <a href="{{ url_for('add_holding') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Your First Stock
+                </a>
+            </div>
+            {% else %}
+            <!-- Export Options -->
+            <div class="row">
+                <!-- PDF Export -->
+                <div class="col-md-6 mb-4">
+                    <div class="card export-card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-file-pdf text-danger"></i> PDF Report</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Generate a comprehensive PDF report including:</p>
+                            <ul class="export-features">
+                                <li><i class="fas fa-check text-success"></i> Portfolio summary</li>
+                                <li><i class="fas fa-check text-success"></i> Individual holdings</li>
+                                <li><i class="fas fa-check text-success"></i> Performance metrics</li>
+                                <li><i class="fas fa-check text-success"></i> Investment recommendations</li>
+                                <li><i class="fas fa-check text-success"></i> Professional formatting</li>
+                            </ul>
+                            <div class="export-actions">
+                                <button class="btn btn-danger btn-lg w-100" disabled title="Coming Soon">
+                                    <i class="fas fa-file-pdf"></i> Generate PDF Report
+                                </button>
+                                <small class="text-muted d-block mt-2">Beta functionality available</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CSV Export -->
+                <div class="col-md-6 mb-4">
+                    <div class="card export-card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-file-csv text-success"></i> CSV Data</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Export raw portfolio data for analysis:</p>
+                            <ul class="export-features">
+                                <li><i class="fas fa-check text-success"></i> All stock holdings</li>
+                                <li><i class="fas fa-check text-success"></i> Purchase prices</li>
+                                <li><i class="fas fa-check text-success"></i> Current prices</li>
+                                <li><i class="fas fa-check text-success"></i> Performance data</li>
+                                <li><i class="fas fa-check text-success"></i> Excel compatible</li>
+                            </ul>
+                            <div class="export-actions">
+                                <button class="btn btn-success btn-lg w-100" disabled title="Coming Soon">
+                                    <i class="fas fa-file-csv"></i> Export CSV Data
+                                </button>
+                                <small class="text-muted d-block mt-2">Beta functionality available</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample Preview -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-eye"></i> Sample Report Preview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-file-pdf text-danger"></i> PDF Report Sample</h6>
+                            <div class="sample-preview pdf-preview">
+                                <div class="preview-header">
+                                    <strong>Stockly Portfolio Report</strong>
+                                    <br><small>Generated on: January 15, 2024 at 2:30 PM</small>
+                                </div>
+                                <div class="preview-section">
+                                    <strong>Portfolio Summary</strong>
+                                    <ul class="preview-list">
+                                        <li>Total Portfolio Value: $1,250.00</li>
+                                        <li>Total Cost Basis: $1,200.00</li>
+                                        <li>Total Gain/Loss: $50.00</li>
+                                        <li>Total Return %: 4.17%</li>
+                                    </ul>
+                                </div>
+                                <div class="preview-section">
+                                    <strong>Individual Holdings</strong>
+                                    <div class="preview-table">
+                                        <div class="preview-row">
+                                            <span>AAPL</span>
+                                            <span>5 shares</span>
+                                            <span>$170.00</span>
+                                            <span>$175.43</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-file-csv text-success"></i> CSV Data Sample</h6>
+                            <div class="sample-preview csv-preview">
+                                <pre>Ticker,Shares,Purchase Price,Current Price,Current Value,Cost Basis,Gain/Loss,Gain/Loss %,Date Added
+AAPL,5,170.00,175.43,877.15,850.00,27.15,3.19,2024-01-10
+MSFT,3,300.00,295.50,886.50,900.00,-13.50,-1.50,2024-01-12
+
+SUMMARY,,,,,,,,
+Total Portfolio Value,,,,1763.65,,,,
+Total Cost Basis,,,,,1750.00,,,
+Total Gain/Loss,,,,,,13.65,,
+Total Return %,,,,,,,0.78</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('portfolio') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-chart-line"></i> View Portfolio
+                        </a>
+                        <a href="{{ url_for('add_holding') }}" class="btn btn-outline-success">
+                            <i class="fas fa-plus"></i> Add Stock
+                        </a>
+                        <a href="{{ url_for('insights') }}" class="btn btn-outline-info">
+                            <i class="fas fa-brain"></i> AI Insights
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coming Soon Features -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-rocket"></i> Coming Soon</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> Custom report templates</li>
+                        <li><i class="fas fa-check text-success"></i> Scheduled exports</li>
+                        <li><i class="fas fa-check text-success"></i> Email delivery</li>
+                        <li><i class="fas fa-check text-success"></i> Historical data exports</li>
+                        <li><i class="fas fa-check text-success"></i> Advanced formatting options</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.export-card {
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.export-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.export-features {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+
+.export-features li {
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+}
+
+.export-features i {
+  margin-right: 8px;
+  width: 16px;
+}
+
+.export-actions {
+  margin-top: 20px;
+}
+
+.export-btn {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sample-preview {
+  background: var(--bg);
+  border: 1px solid #2a2d35;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 12px;
+  font-size: 0.9rem;
+}
+
+.pdf-preview {
+  font-family: 'Times New Roman', serif;
+}
+
+.pdf-preview .preview-header {
+  text-align: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #2a2d35;
+}
+
+.pdf-preview .preview-section {
+  margin-bottom: 16px;
+}
+
+.pdf-preview .preview-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+
+.pdf-preview .preview-list li {
+  padding: 2px 0;
+}
+
+.pdf-preview .preview-table {
+  margin-top: 8px;
+}
+
+.pdf-preview .preview-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #2a2d35;
+}
+
+.csv-preview pre {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.empty-state h4 {
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.holdings-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.export-buttons .btn {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+}
+
+@media (max-width: 768px) {
+  .holdings-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .export-buttons {
+    justify-content: center;
+  }
+  
+  .sample-preview {
+    font-size: 0.8rem;
+  }
+  
+  .csv-preview pre {
+    font-size: 0.7rem;
+  }
+}
+</style>
+{% endblock %}

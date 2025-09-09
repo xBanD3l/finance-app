@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Notifications - Stockly{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-bell"></i> Smart Notifications</h2>
+                <div class="btn-group">
+                    <a href="{{ url_for('notification_preferences') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-cog"></i> Preferences
+                    </a>
+                    <button class="btn btn-outline-secondary" onclick="clearAllNotifications()">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coming Soon Banner -->
+            <div class="alert alert-info mb-4">
+                <h5><i class="fas fa-info-circle"></i> Coming Soon!</h5>
+                <p class="mb-0">Smart Notifications are currently in development. This is a preview of the notification system with sample data. Real-time alerts will be available soon!</p>
+            </div>
+
+            <!-- Notifications List -->
+            <div class="notifications-container">
+                {% if notifications %}
+                    {% for notification in notifications %}
+                    <div class="notification-item card mb-3 {% if not notification.read %}unread{% endif %}" 
+                         data-notification-id="{{ notification.id }}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="notification-icon me-2">
+                                            {% if notification.type == 'price_change' %}
+                                                <i class="fas fa-chart-line text-success"></i>
+                                            {% elif notification.type == 'earnings' %}
+                                                <i class="fas fa-chart-bar text-primary"></i>
+                                            {% elif notification.type == 'news' %}
+                                                <i class="fas fa-newspaper text-info"></i>
+                                            {% else %}
+                                                <i class="fas fa-bell text-warning"></i>
+                                            {% endif %}
+                                        </span>
+                                        <h6 class="mb-0">{{ notification.title }}</h6>
+                                        {% if notification.priority == 'high' %}
+                                            <span class="badge bg-danger ms-2">High Priority</span>
+                                        {% elif notification.priority == 'medium' %}
+                                            <span class="badge bg-warning ms-2">Medium Priority</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-muted mb-2">{{ notification.message }}</p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock"></i> 
+                                        {{ notification.timestamp[:19].replace('T', ' ') }}
+                                    </small>
+                                </div>
+                                <div class="notification-actions">
+                                    {% if not notification.read %}
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                onclick="markAsRead('{{ notification.id }}')">
+                                            <i class="fas fa-check"></i> Mark Read
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">No notifications yet</h4>
+                        <p class="text-muted">Set up your notification preferences to start receiving alerts!</p>
+                        <a href="{{ url_for('notification_preferences') }}" class="btn btn-primary">
+                            <i class="fas fa-cog"></i> Configure Notifications
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Quick Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-pie"></i> Notification Stats</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h4 class="text-primary">{{ notifications|selectattr('read', 'equalto', false)|list|length }}</h4>
+                            <small class="text-muted">Unread</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-success">{{ notifications|length }}</h4>
+                            <small class="text-muted">Total</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('notification_preferences') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-cog"></i> Manage Preferences
+                        </a>
+                        <a href="{{ url_for('portfolio') }}" class="btn btn-outline-success">
+                            <i class="fas fa-chart-line"></i> View Portfolio
+                        </a>
+                        <button class="btn btn-outline-info" onclick="refreshNotifications()">
+                            <i class="fas fa-sync"></i> Refresh Notifications
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.notification-item.unread {
+    border-left: 4px solid #007bff;
+    background-color: #f8f9fa;
+}
+
+.notification-item.unread .card-body {
+    background-color: #f8f9fa;
+}
+
+.notification-icon {
+    font-size: 1.2em;
+}
+
+.notification-actions {
+    min-width: 120px;
+    text-align: right;
+}
+</style>
+
+<script>
+function markAsRead(notificationId) {
+    fetch(`/notifications/mark_read/${notificationId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
+            notificationElement.classList.remove('unread');
+            notificationElement.querySelector('.notification-actions').innerHTML = '';
+            // Refresh the page to update stats
+            setTimeout(() => location.reload(), 500);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function clearAllNotifications() {
+    if (confirm('Are you sure you want to clear all notifications?')) {
+        fetch('/notifications/clear_all', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+
+function refreshNotifications() {
+    fetch('/notifications/api/check')
+    .then(response => response.json())
+    .then(data => {
+        // In a real implementation, you'd update the UI with new notifications
+        console.log('Notifications refreshed:', data);
+        location.reload();
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

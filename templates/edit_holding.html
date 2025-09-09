@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+  <h1>Edit Stock Holding</h1>
+  <p>Update details for {{ ticker }}</p>
+</div>
+
+<div class="card">
+  <form method="post" class="holding-form">
+    <div class="form-group">
+      <label for="ticker">
+        <strong>Stock Symbol</strong>
+        <input type="text" name="ticker" id="ticker" value="{{ ticker }}" readonly 
+               style="background: var(--bg-secondary); color: var(--text-secondary);">
+        <small class="input-hint">Stock symbol cannot be changed</small>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="shares">
+        <strong>Number of Shares</strong>
+        <input type="number" name="shares" id="shares" required 
+               min="0.01" step="0.01" 
+               value="{{ holding.shares }}"
+               placeholder="e.g., 10, 25.5, 100">
+        <small class="input-hint">Enter the number of shares you own</small>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="purchase_price">
+        <strong>Purchase Price per Share</strong>
+        <input type="number" name="purchase_price" id="purchase_price" required 
+               min="0.01" step="0.01" 
+               value="{{ holding.purchase_price }}"
+               placeholder="e.g., 150.25, 200.00">
+        <small class="input-hint">Enter the price you paid per share</small>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="purchase_date">
+        <strong>Purchase Date</strong>
+        <input type="date" name="purchase_date" id="purchase_date" 
+               value="{{ holding.date_added.split('T')[0] if holding.date_added else '' }}">
+        <small class="input-hint">When did you purchase these shares?</small>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Update Holding</button>
+      <a href="{{ url_for('portfolio') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<div class="card info-card">
+  <h3>📊 Current Holding Details</h3>
+  <div class="holding-details">
+    <div class="detail-item">
+      <span class="detail-label">Stock Symbol:</span>
+      <span class="detail-value">{{ ticker }}</span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Current Shares:</span>
+      <span class="detail-value">{{ "{:,.2f}".format(holding.shares) }}</span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Purchase Price:</span>
+      <span class="detail-value">${{ "{:,.2f}".format(holding.purchase_price) }}</span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Total Cost Basis:</span>
+      <span class="detail-value">${{ "{:,.2f}".format(holding.shares * holding.purchase_price) }}</span>
+    </div>
+    {% if holding.date_added %}
+    <div class="detail-item">
+      <span class="detail-label">Date Added:</span>
+      <span class="detail-value">{{ holding.date_added.split('T')[0] }}</span>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('.holding-form');
+  const sharesInput = document.getElementById('shares');
+  const priceInput = document.getElementById('purchase_price');
+  
+  // Real-time validation
+  sharesInput.addEventListener('input', function() {
+    if (this.value < 0) this.value = 0;
+  });
+  
+  priceInput.addEventListener('input', function() {
+    if (this.value < 0) this.value = 0;
+  });
+  
+  // Form submission validation
+  form.addEventListener('submit', function(e) {
+    const shares = parseFloat(sharesInput.value);
+    const price = parseFloat(priceInput.value);
+    
+    if (!shares || shares <= 0) {
+      alert('Please enter a valid number of shares');
+      e.preventDefault();
+      return false;
+    }
+    
+    if (!price || price <= 0) {
+      alert('Please enter a valid purchase price');
+      e.preventDefault();
+      return false;
+    }
+  });
+});
+</script>
+
+<style>
+.holding-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-group input[readonly] {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.input-hint {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.info-card {
+  margin-top: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.holding-details {
+  margin-top: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.detail-value {
+  font-weight: 600;
+  color: var(--text);
+}
+</style>
+{% endblock %}

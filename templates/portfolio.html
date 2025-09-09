@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+  <h1>Portfolio Tracking</h1>
+  <p>Monitor your stock investments and track performance in real-time</p>
+</div>
+
+{% if empty %}
+<div class="card empty-portfolio">
+  <div class="empty-state">
+    <div class="empty-icon">📊</div>
+    <h3>No Holdings Yet</h3>
+    <p>Start building your portfolio by adding your first stock holding.</p>
+    <a href="{{ url_for('add_holding') }}" class="btn btn-primary">Add Your First Stock</a>
+  </div>
+</div>
+{% else %}
+
+<!-- Portfolio Summary -->
+<div class="card portfolio-summary">
+  <h3>Portfolio Summary</h3>
+  <div class="summary-grid">
+    <div class="summary-item">
+      <span class="summary-label">Total Value</span>
+      <span class="summary-value">${{ "{:,.2f}".format(metrics.total_value) }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Total Cost</span>
+      <span class="summary-value">${{ "{:,.2f}".format(metrics.total_cost) }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Gain/Loss</span>
+      <span class="summary-value {% if metrics.total_gain_loss >= 0 %}positive{% else %}negative{% endif %}">
+        ${{ "{:,.2f}".format(metrics.total_gain_loss) }}
+      </span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Gain/Loss %</span>
+      <span class="summary-value {% if metrics.total_gain_loss >= 0 %}positive{% else %}negative{% endif %}">
+        {{ "{:+.2f}".format(metrics.total_gain_loss_pct) }}%
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Section -->
+<div class="charts-section">
+  <div class="chart-container">
+    <div class="card">
+      <h3>Portfolio Allocation</h3>
+      <canvas id="allocationChart" width="400" height="400"></canvas>
+    </div>
+    
+    <div class="card">
+      <h3>Portfolio Value Over Time</h3>
+      <canvas id="valueChart" width="400" height="300"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Holdings Table -->
+<div class="card">
+  <div class="holdings-header">
+    <h3>Your Holdings</h3>
+    <div class="holdings-actions">
+      <a href="{{ url_for('add_holding') }}" class="btn btn-primary">Add Stock</a>
+      <div class="export-buttons">
+        <button class="btn btn-outline-secondary export-btn" disabled title="Coming Soon">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+        <button class="btn btn-outline-secondary export-btn" disabled title="Coming Soon">
+          <i class="fas fa-file-csv"></i> Export CSV
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="holdings-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Shares</th>
+          <th>Purchase Price</th>
+          <th>Current Price</th>
+          <th>Current Value</th>
+          <th>Gain/Loss</th>
+          <th>Gain/Loss %</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticker, data in holdings.items() %}
+        {% set stock_data = metrics.stock_values.get(ticker, {}) %}
+        <tr>
+          <td class="ticker-symbol">{{ ticker }}</td>
+          <td>{{ "{:,.0f}".format(data.shares) }}</td>
+          <td>${{ "{:,.2f}".format(data.purchase_price) }}</td>
+          <td>${{ "{:,.2f}".format(stock_data.current_price or 0) }}</td>
+          <td>${{ "{:,.2f}".format(stock_data.current_value or 0) }}</td>
+          <td class="{% if stock_data.gain_loss >= 0 %}positive{% else %}negative{% endif %}">
+            ${{ "{:,.2f}".format(stock_data.gain_loss or 0) }}
+          </td>
+          <td class="{% if stock_data.gain_loss >= 0 %}positive{% else %}negative{% endif %}">
+            {{ "{:+.2f}".format(stock_data.gain_loss_pct or 0) }}%
+          </td>
+          <td class="actions">
+            <a href="{{ url_for('edit_holding', ticker=ticker) }}" class="btn btn-secondary btn-small">Edit</a>
+            <form method="POST" action="{{ url_for('delete_holding', ticker=ticker) }}" style="display: inline;">
+              <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Are you sure you want to delete {{ ticker }}?')">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Portfolio Allocation Pie Chart
+const allocationCtx = document.getElementById('allocationChart');
+if (allocationCtx) {
+  const allocationData = {
+    labels: [
+      {% for ticker, data in holdings.items() %}
+      '{{ ticker }}'{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ],
+    datasets: [{
+      data: [
+        {% for ticker, data in holdings.items() %}
+        {{ metrics.stock_values.get(ticker, {}).current_value or 0 }}{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ],
+      backgroundColor: [
+        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+      ]
+    }]
+  };
+  
+  new Chart(allocationCtx, {
+    type: 'pie',
+    data: allocationData,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+}
+
+// Portfolio Value Over Time Line Chart (Mock Data)
+const valueCtx = document.getElementById('valueChart');
+if (valueCtx) {
+  // Generate mock historical data
+  const days = 30;
+  const mockData = [];
+  const baseValue = {{ metrics.total_value }};
+  
+  for (let i = days; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const variation = (Math.random() - 0.5) * 0.1; // ±5% variation
+    const value = baseValue * (1 + variation);
+    
+    mockData.push({
+      x: date.toISOString().split('T')[0],
+      y: value
+    });
+  }
+  
+  new Chart(valueCtx, {
+    type: 'line',
+    data: {
+      datasets: [{
+        label: 'Portfolio Value',
+        data: mockData,
+        borderColor: '#36A2EB',
+        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          type: 'time',
+          time: {
+            unit: 'day'
+          }
+        },
+        y: {
+          beginAtZero: false,
+          ticks: {
+            callback: function(value) {
+              return '$' + value.toLocaleString();
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        }
+      }
+    }
+  });
+}
+
+// Auto-refresh prices every 30 seconds
+setInterval(function() {
+  fetch('/portfolio/api/prices')
+    .then(response => response.json())
+    .then(prices => {
+      // Update current prices in the table
+      Object.keys(prices).forEach(ticker => {
+        const priceElement = document.querySelector(`tr:has(.ticker-symbol:contains("${ticker}")) td:nth-child(4)`);
+        if (priceElement) {
+          priceElement.textContent = '$' + prices[ticker].toFixed(2);
+        }
+      });
+    })
+    .catch(error => console.log('Error fetching prices:', error));
+}, 30000);
+</script>
+
+<style>
+.portfolio-summary {
+  margin-bottom: 2rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.summary-item {
+  text-align: center;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.summary-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.summary-value.positive {
+  color: #4CAF50;
+}
+
+.summary-value.negative {
+  color: #F44336;
+}
+
+.charts-section {
+  margin-bottom: 2rem;
+}
+
+.chart-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+.holdings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.holdings-table {
+  overflow-x: auto;
+}
+
+.holdings-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.holdings-table th,
+.holdings-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.holdings-table th {
+  background: var(--bg-secondary);
+  font-weight: 600;
+}
+
+.ticker-symbol {
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.positive {
+  color: #4CAF50;
+}
+
+.negative {
+  color: #F44336;
+}
+
+.actions {
+  white-space: nowrap;
+}
+
+.actions .btn {
+  margin-right: 0.5rem;
+}
+
+.btn-small {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.btn-danger {
+  background: #F44336;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #D32F2F;
+}
+
+.empty-portfolio {
+  text-align: center;
+  padding: 3rem;
+}
+
+.empty-state {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+</style>
+{% endblock %}
