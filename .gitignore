@@ -1,5 +1,63 @@
-__pycache__/
+# Virtual environments
+.venv/
 venv/
+ENV/
+env/
+
+# Python cache
+__pycache__/
 *.pyc
-database.db
+*.pyo
+*.pyd
+*.pdb
+
+# Build and packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+pip-wheel-metadata/
+*.manifest
+*.spec
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+
+# Environment & secrets
+.env
 *.env
+.env.*
+.envrc
+secrets.json
+*.pem
+*.key
+
+# IDE / Editor junk
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+.DS_Store
+Thumbs.db
+
+# Test and coverage
+.coverage
+.tox/
+.nox/
+.pytest_cache/
+htmlcov/
+
+# Misc
+*.pid
+*.seed
+*.out
+*.gz
+*.tmp
