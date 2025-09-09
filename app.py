@@ -70,7 +70,7 @@ INSTRUCTIONS:
         """
 
         # Call the OpenAI API
-        response = client.chat.completions.create(  # pyright: ignore[reportUndefinedVariable]
+        response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a professional financial advisor providing clear, actionable investment advice. Always respond with valid JSON."},
